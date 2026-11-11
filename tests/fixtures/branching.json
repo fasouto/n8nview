@@ -1,0 +1,215 @@
+{
+  "name": "Ticket triage",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "tickets",
+        "options": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b01",
+      "name": "New ticket",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 200],
+      "webhookId": "5d0c6a2e-9f3b-4e55-8a11-2b7c4d6e8f90"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.topic }}",
+                    "rightValue": "billing",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "billing"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.topic }}",
+                    "rightValue": "support",
+                    "operator": { "type": "string", "operation": "equals" }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "support"
+            },
+            {
+              "conditions": {
+                "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.topic }}",
+                    "rightValue": "",
+                    "operator": { "type": "string", "operation": "notEmpty", "singleValue": true }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b02",
+      "name": "Route by topic",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [220, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://billing.example.com/api/invoices",
+        "options": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b03",
+      "name": "Create invoice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "options": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b04",
+      "name": "Support Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [440, 200]
+    },
+    {
+      "parameters": {
+        "model": { "__rl": true, "value": "gpt-4o-mini", "mode": "list" },
+        "options": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b05",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [380, 420]
+    },
+    {
+      "parameters": {},
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b06",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [500, 420]
+    },
+    {
+      "parameters": {},
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b07",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [620, 420]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Search the product docs",
+        "url": "https://docs.example.com/api/search",
+        "sendQuery": true,
+        "parametersQuery": { "values": [{ "name": "q" }] }
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b08",
+      "name": "Search \"docs\" [v2]",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [740, 420]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": { "__rl": true, "value": "#support", "mode": "name" },
+        "text": "={{ $json.output }}",
+        "otherOptions": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b09",
+      "name": "Reply in Slack 💬",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [800, 100]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": { "__rl": true, "value": "1AbCdEfGhIjKlMnOpQrStUvWxYz", "mode": "id" },
+        "sheetName": { "__rl": true, "value": "gid=0", "mode": "list" },
+        "options": {}
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b10",
+      "name": "Log to sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [440, 620],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "## Ticket triage\nBilling goes to the invoice API, support goes to the agent.",
+        "height": 160,
+        "width": 320
+      },
+      "id": "8c2e4b10-1a7f-4a55-b0d3-5e9f1c7a2b11",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-60, -80]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "New ticket": {
+      "main": [[{ "node": "Route by topic", "type": "main", "index": 0 }]]
+    },
+    "Route by topic": {
+      "main": [
+        [{ "node": "Create invoice", "type": "main", "index": 0 }],
+        [{ "node": "Support Agent", "type": "main", "index": 0 }],
+        [{ "node": "Log to sheet", "type": "main", "index": 0 }]
+      ]
+    },
+    "Create invoice": {
+      "main": [[{ "node": "Reply in Slack 💬", "type": "main", "index": 0 }]]
+    },
+    "Support Agent": {
+      "main": [[{ "node": "Reply in Slack 💬", "type": "main", "index": 0 }]]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [[{ "node": "Support Agent", "type": "ai_languageModel", "index": 0 }]]
+    },
+    "Simple Memory": {
+      "ai_memory": [[{ "node": "Support Agent", "type": "ai_memory", "index": 0 }]]
+    },
+    "Calculator": {
+      "ai_tool": [[{ "node": "Support Agent", "type": "ai_tool", "index": 0 }]]
+    },
+    "Search \"docs\" [v2]": {
+      "ai_tool": [[{ "node": "Support Agent", "type": "ai_tool", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "e41d7c9a-2b6f-4c18-9a70-3f5e8d1b6c22",
+  "meta": { "instanceId": "0000000000000000000000000000000000000000000000000000000000000000" },
+  "id": "Br4nchFixture0002",
+  "tags": []
+}

@@ -1,0 +1,56 @@
+{
+  "name": "Daily status to Slack",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [{ "triggerAtHour": 9 }]
+        }
+      },
+      "id": "3f1c9a52-7d1e-4b0a-9c55-0a6a4a1f1d01",
+      "name": "Every morning",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "url": "https://status.example.com/api/summary",
+        "options": {}
+      },
+      "id": "3f1c9a52-7d1e-4b0a-9c55-0a6a4a1f1d02",
+      "name": "Fetch status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": { "__rl": true, "value": "#ops", "mode": "name" },
+        "text": "={{ $json.summary }}",
+        "otherOptions": {}
+      },
+      "id": "3f1c9a52-7d1e-4b0a-9c55-0a6a4a1f1d03",
+      "name": "Post to #ops",
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [440, 0]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Every morning": {
+      "main": [[{ "node": "Fetch status", "type": "main", "index": 0 }]]
+    },
+    "Fetch status": {
+      "main": [[{ "node": "Post to #ops", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "versionId": "b7a0c1de-58f4-4f0e-8f43-6d2f5a3c9e10",
+  "meta": { "instanceId": "0000000000000000000000000000000000000000000000000000000000000000" },
+  "id": "Lin3arFixture0001",
+  "tags": []
+}
