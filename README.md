@@ -75,6 +75,8 @@ Each node shows its name and its type. When the drawing is wider than the termin
 
 n8nview reads files and stdin only. It never calls the n8n API.
 
+The [examples](examples) folder has three workflows to try it on: a chat agent, an IF branch and a loop.
+
 ### Colour
 
 `--theme` draws in colour with one of termaid's themes: `default`, `terra`, `neon`, `mono`, `amber`, `phosphor`, `gruvbox`, `monokai`, `dracula`, `nord` or `solarized`. Disabled nodes are grey. Colour needs [Rich](https://rich.readthedocs.io/), which is an optional extra:

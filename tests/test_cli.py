@@ -9,6 +9,7 @@ from termaid.utils import max_line_width
 from n8nview.cli import main
 
 FIXTURES = Path(__file__).parent / "fixtures"
+EXAMPLES = Path(__file__).parent.parent / "examples"
 BRANCHING = str(FIXTURES / "branching.json")
 LINEAR = str(FIXTURES / "linear.json")
 
@@ -18,6 +19,14 @@ def test_draws_within_100_columns(fixture, capsys):
     assert main(["--width", "100", fixture]) == 0
     captured = capsys.readouterr()
     assert max_line_width(captured.out.rstrip("\n")) <= 100
+    assert captured.err == ""
+
+
+@pytest.mark.parametrize("example", sorted(EXAMPLES.glob("*.json")), ids=lambda path: path.stem)
+def test_every_example_draws(example, capsys):
+    assert main(["--width", "112", str(example)]) == 0
+    captured = capsys.readouterr()
+    assert max_line_width(captured.out.rstrip("\n")) <= 112
     assert captured.err == ""
 
 

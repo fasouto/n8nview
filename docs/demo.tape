@@ -2,15 +2,15 @@
 #
 #   uv sync && vhs docs/demo.tape
 #
-# Run it from the repo root. It draws the two workflows in tests/fixtures,
-# the second one in colour, and then prints the first one as Mermaid.
+# Run it from the repo root. It draws the workflows in examples/ and
+# tests/fixtures, most of them in colour, and then prints one as Mermaid.
 
 Output docs/demo.gif
 
 Set Shell "bash"
 Set FontSize 12
 Set Width 1050
-Set Height 640
+Set Height 660
 Set Padding 15
 Set Margin 15
 Set MarginFill "#FFFFFF"
@@ -23,20 +23,39 @@ Env "PS1" "$ "
 Env "VIRTUAL_ENV_DISABLE_PROMPT" "1"
 
 Hide
-Type "source .venv/bin/activate && cd tests/fixtures && clear"
+Type "source .venv/bin/activate && demo=$(mktemp -d) && cp examples/*.json $demo"
+Enter
+Type "cp tests/fixtures/linear.json $demo/daily-status.json && cp tests/fixtures/branching.json $demo/ticket-triage.json"
+Enter
+Type "cd $demo && clear"
 Enter
 Show
 
-Type "n8nview linear.json"
+Type "n8nview daily-status.json"
 Enter
-Sleep 4s
+Sleep 3s
 
 Ctrl+L
-Type "n8nview --theme default branching.json"
+Type "n8nview --theme terra lead-qualification.json"
+Enter
+Sleep 5s
+
+Ctrl+L
+Type "n8nview --theme neon chat-agent.json"
+Enter
+Sleep 6s
+
+Ctrl+L
+Type "n8nview --theme amber rss-digest.json"
+Enter
+Sleep 6s
+
+Ctrl+L
+Type "n8nview --theme default ticket-triage.json"
 Enter
 Sleep 8s
 
 Ctrl+L
-Type "n8nview --mermaid linear.json"
+Type "n8nview --mermaid lead-qualification.json"
 Enter
-Sleep 5s
+Sleep 6s
