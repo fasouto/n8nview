@@ -47,6 +47,23 @@ class Edge:
 
 
 @dataclass(frozen=True)
+class Mark:
+    """An extra line under a node, with the Mermaid class that colours the node."""
+
+    text: str
+    css_class: str
+
+
+_CLASS_STYLES = {
+    "disabled": "color:#808080,stroke:#808080,stroke-dasharray: 4 4",
+    "ok": "color:#3fb950,stroke:#3fb950",
+    "running": "color:#d29922,stroke:#d29922",
+    "failed": "color:#f85149,stroke:#f85149",
+    "idle": "color:#808080,stroke:#808080",
+}
+
+
+@dataclass(frozen=True)
 class Workflow:
     nodes: list[Node]
     edges: list[Edge]
@@ -156,7 +173,10 @@ def _escape(text: str) -> str:
     return "".join(_ENTITIES.get(char, char) for char in text)
 
 
-def to_mermaid(workflow: Workflow, *, show_types: bool = True) -> str:
+def to_mermaid(workflow: Workflow, *, show_types: bool = True, marks: dict[str, Mark] | None = None) -> str:
+    """Mermaid source for *workflow*. *marks* adds a line to nodes, keyed by node id."""
+    marks = marks or {}
+    classes: list[str] = []
     sub_nodes = workflow.sub_node_ids
     lines = ["flowchart LR"]
     if workflow.name:
@@ -166,11 +186,15 @@ def to_mermaid(workflow: Workflow, *, show_types: bool = True) -> str:
         parts = [node.name]
         if show_types:
             parts.append(node.short_type)
-        if node.disabled:
-            parts.append("(disabled)")
+        mark = marks.get(node.id) or (Mark("(disabled)", "disabled") if node.disabled else None)
+        suffix = ""
+        if mark:
+            parts.append(mark.text)
+            suffix = f":::{mark.css_class}"
+            if mark.css_class not in classes:
+                classes.append(mark.css_class)
         label = "<br/>".join(_escape(part) for part in parts)
         opening, closing = ('(["', '"])') if node.id in sub_nodes else ('["', '"]')
-        suffix = ":::disabled" if node.disabled else ""
         lines.append(f"  {node.id}{opening}{label}{closing}{suffix}")
     for edge in workflow.edges:
         if edge.kind != MAIN:
@@ -181,6 +205,6 @@ def to_mermaid(workflow: Workflow, *, show_types: bool = True) -> str:
             lines.append(f'  {edge.source} -->|"{_escape(edge.label)}"| {edge.target}')
         else:
             lines.append(f"  {edge.source} --> {edge.target}")
-    if any(node.disabled for node in workflow.nodes):
-        lines.append("  classDef disabled color:#808080,stroke:#808080,stroke-dasharray: 4 4")
+    for css_class in classes:
+        lines.append(f"  classDef {css_class} {_CLASS_STYLES[css_class]}")
     return "\n".join(lines) + "\n"

@@ -1,0 +1,443 @@
+{
+ "id": "5",
+ "finished": false,
+ "mode": "webhook",
+ "retryOf": null,
+ "retrySuccessId": null,
+ "status": "running",
+ "createdAt": "2026-11-11T19:32:44.491Z",
+ "startedAt": "2026-11-11T19:32:44.492Z",
+ "stoppedAt": null,
+ "deletedAt": null,
+ "workflowId": "Z5aT5A5DD2wjaZPf",
+ "waitTill": null,
+ "storedAt": "db",
+ "tracingContext": null,
+ "deduplicationKey": null,
+ "jsonSizeBytes": 4871,
+ "binaryDataSizeBytes": 0,
+ "workflowVersionId": "d29495cd-ac7b-4f75-81f1-b87188227649",
+ "usedPrivateCredentials": false,
+ "data": {
+  "version": 1,
+  "startData": {},
+  "resultData": {
+   "runData": {
+    "New order": [
+     {
+      "startTime": 1794425564495,
+      "executionIndex": 0,
+      "source": [],
+      "hints": [],
+      "executionTime": 0,
+      "executionStatus": "success",
+      "data": {
+       "main": [
+        [
+         {
+          "json": {
+           "headers": {
+            "host": "localhost:5679",
+            "user-agent": "curl/8.7.1",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "content-length": "15"
+           },
+           "params": {},
+           "query": {},
+           "body": {
+            "fail": false
+           },
+           "webhookUrl": "http://localhost:5679/webhook/order-progress",
+           "executionMode": "production"
+          },
+          "pairedItem": {
+           "item": 0
+          }
+         }
+        ]
+       ]
+      }
+     }
+    ],
+    "Check stock": [
+     {
+      "startTime": 1794425564496,
+      "executionIndex": 1,
+      "source": [
+       {
+        "previousNode": "New order",
+        "previousNodeOutput": 0,
+        "previousNodeRun": 0
+       }
+      ],
+      "hints": [],
+      "executionTime": 3001,
+      "executionStatus": "success",
+      "data": {
+       "main": [
+        [
+         {
+          "json": {
+           "headers": {
+            "host": "localhost:5679",
+            "user-agent": "curl/8.7.1",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "content-length": "15"
+           },
+           "params": {},
+           "query": {},
+           "body": {
+            "fail": false
+           },
+           "webhookUrl": "http://localhost:5679/webhook/order-progress",
+           "executionMode": "production"
+          },
+          "pairedItem": {
+           "item": 0
+          }
+         }
+        ]
+       ]
+      }
+     }
+    ],
+    "Should fail?": [
+     {
+      "startTime": 1794425567503,
+      "executionIndex": 2,
+      "source": [
+       {
+        "previousNode": "Check stock",
+        "previousNodeOutput": 0,
+        "previousNodeRun": 0
+       }
+      ],
+      "hints": [],
+      "executionTime": 6,
+      "executionStatus": "success",
+      "data": {
+       "main": [
+        [],
+        [
+         {
+          "json": {
+           "headers": {
+            "host": "localhost:5679",
+            "user-agent": "curl/8.7.1",
+            "accept": "*/*",
+            "content-type": "application/json",
+            "content-length": "15"
+           },
+           "params": {},
+           "query": {},
+           "body": {
+            "fail": false
+           },
+           "webhookUrl": "http://localhost:5679/webhook/order-progress",
+           "executionMode": "production"
+          },
+          "pairedItem": {
+           "item": 0
+          }
+         }
+        ]
+       ]
+      }
+     }
+    ]
+   },
+   "lastNodeExecuted": "Should fail?"
+  },
+  "executionData": {
+   "contextData": {},
+   "nodeExecutionStack": [
+    {
+     "node": {
+      "id": "00000000-0000-4000-8000-000000000005",
+      "name": "Charge card",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+       660,
+       200
+      ],
+      "parameters": {
+       "resume": "timeInterval",
+       "amount": 3,
+       "unit": "seconds"
+      },
+      "webhookId": "c50bcad8-1555-4605-9fcb-c4093b269c62"
+     },
+     "data": {
+      "main": [
+       [
+        {
+         "json": {
+          "headers": {
+           "host": "localhost:5679",
+           "user-agent": "curl/8.7.1",
+           "accept": "*/*",
+           "content-type": "application/json",
+           "content-length": "15"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+           "fail": false
+          },
+          "webhookUrl": "http://localhost:5679/webhook/order-progress",
+          "executionMode": "production"
+         },
+         "pairedItem": {
+          "item": 0
+         }
+        }
+       ]
+      ]
+     },
+     "source": {
+      "main": [
+       {
+        "previousNode": "Should fail?",
+        "previousNodeOutput": 1,
+        "previousNodeRun": 0
+       }
+      ]
+     }
+    }
+   ],
+   "metadata": {},
+   "waitingExecution": {},
+   "waitingExecutionSource": {},
+   "runtimeData": {
+    "version": 1,
+    "establishedAt": 1794425564490,
+    "source": "webhook",
+    "triggerNode": {
+     "name": "New order",
+     "type": "n8n-nodes-base.webhook"
+    },
+    "redaction": {
+     "version": 2,
+     "production": false,
+     "manual": false
+    }
+   }
+  },
+  "resumeToken": "0066d160b865a1077c4e9bd3f44e2141b65a7923da581434cf04d7f8d79c4da8"
+ },
+ "customData": {},
+ "workflowData": {
+  "id": "Z5aT5A5DD2wjaZPf",
+  "name": "Order pipeline",
+  "nodes": [
+   {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "name": "New order",
+    "type": "n8n-nodes-base.webhook",
+    "typeVersion": 2,
+    "position": [
+     0,
+     100
+    ],
+    "parameters": {
+     "multipleMethods": false,
+     "httpMethod": "POST",
+     "path": "order-progress",
+     "authentication": "none",
+     "responseMode": "onReceived",
+     "contentTypeNotice": "",
+     "options": {}
+    },
+    "webhookId": "85f7aff1-75cf-4e24-a464-ac4bd832dd15"
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000002",
+    "name": "Check stock",
+    "type": "n8n-nodes-base.wait",
+    "typeVersion": 1.1,
+    "position": [
+     220,
+     100
+    ],
+    "parameters": {
+     "resume": "timeInterval",
+     "amount": 3,
+     "unit": "seconds"
+    },
+    "webhookId": "7c88aebb-a688-43bd-a484-f65fa57fc08a"
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000003",
+    "name": "Should fail?",
+    "type": "n8n-nodes-base.if",
+    "typeVersion": 2.2,
+    "position": [
+     440,
+     100
+    ],
+    "parameters": {
+     "conditions": {
+      "options": {
+       "caseSensitive": true,
+       "leftValue": "",
+       "typeValidation": "loose",
+       "version": 2
+      },
+      "conditions": [
+       {
+        "id": "c1",
+        "leftValue": "={{ $json.body.fail }}",
+        "rightValue": "",
+        "operator": {
+         "type": "boolean",
+         "operation": "true",
+         "singleValue": true
+        }
+       }
+      ],
+      "combinator": "and"
+     },
+     "looseTypeValidation": false,
+     "options": {}
+    }
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000004",
+    "name": "Crash",
+    "type": "n8n-nodes-base.stopAndError",
+    "typeVersion": 1,
+    "position": [
+     660,
+     0
+    ],
+    "parameters": {
+     "errorType": "errorMessage",
+     "errorMessage": "Card declined"
+    }
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000005",
+    "name": "Charge card",
+    "type": "n8n-nodes-base.wait",
+    "typeVersion": 1.1,
+    "position": [
+     660,
+     200
+    ],
+    "parameters": {
+     "resume": "timeInterval",
+     "amount": 3,
+     "unit": "seconds"
+    },
+    "webhookId": "c50bcad8-1555-4605-9fcb-c4093b269c62"
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000006",
+    "name": "Ship",
+    "type": "n8n-nodes-base.wait",
+    "typeVersion": 1.1,
+    "position": [
+     880,
+     200
+    ],
+    "parameters": {
+     "resume": "timeInterval",
+     "amount": 3,
+     "unit": "seconds"
+    },
+    "webhookId": "a9a331be-2575-4839-b5e7-c817f4ae7ca7"
+   },
+   {
+    "id": "00000000-0000-4000-8000-000000000007",
+    "name": "Send receipt",
+    "type": "n8n-nodes-base.set",
+    "typeVersion": 3.4,
+    "position": [
+     1100,
+     200
+    ],
+    "parameters": {
+     "mode": "manual",
+     "duplicateItem": false,
+     "assignments": {},
+     "includeOtherFields": false,
+     "options": {}
+    }
+   }
+  ],
+  "connections": {
+   "New order": {
+    "main": [
+     [
+      {
+       "node": "Check stock",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "Check stock": {
+    "main": [
+     [
+      {
+       "node": "Should fail?",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "Should fail?": {
+    "main": [
+     [
+      {
+       "node": "Crash",
+       "type": "main",
+       "index": 0
+      }
+     ],
+     [
+      {
+       "node": "Charge card",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "Charge card": {
+    "main": [
+     [
+      {
+       "node": "Ship",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   },
+   "Ship": {
+    "main": [
+     [
+      {
+       "node": "Send receipt",
+       "type": "main",
+       "index": 0
+      }
+     ]
+    ]
+   }
+  },
+  "settings": {
+   "saveExecutionProgress": true,
+   "saveManualExecutions": true,
+   "saveDataSuccessExecution": "all",
+   "executionOrder": "v1"
+  },
+  "nodeGroups": []
+ }
+}

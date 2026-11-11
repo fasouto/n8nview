@@ -1,16 +1,17 @@
 # n8nview
 
-Draw an [n8n](https://n8n.io) workflow in the terminal, from the JSON file you get with "Download" in the n8n editor.
+Draw an [n8n](https://n8n.io) workflow in the terminal, and watch it run node by node.
 
 ```sh
-n8nview workflow.json             # draw the workflow
+n8nview workflow.json             # draw a workflow you downloaded from the n8n editor
 n8nview --mermaid workflow.json   # the same workflow as Mermaid text
+n8nview --latest --watch          # follow the execution that is running on your n8n
 ```
 
-An n8n workflow is a JSON file, and JSON is hard to read in a pull request, in a
-terminal over SSH, or in a chat with a coding agent. n8nview shows the shape of the
-workflow as text: what triggers it, where it branches, and which model, memory and
-tools each AI agent uses.
+An n8n workflow is a JSON file, and JSON is hard to read in a pull request or over SSH.
+n8nview draws it as boxes and arrows made of text. The drawing shows what triggers the
+workflow, where it branches, and which model, memory and tools each AI agent uses.
+During a run it also shows which nodes finished, which one is running and which one failed.
 
 ![n8nview demo](docs/demo.gif)
 
@@ -45,7 +46,7 @@ Ticket triage · 10 nodes
                                                                           ╰──────────────────────╯
 ```
 
-Solid arrows are the main flow. Dotted lines attach the model, memory and tools to their AI agent. The outputs of IF and Switch nodes carry their names, sticky notes are left out, and disabled nodes say so.
+Solid arrows are the main flow. Dotted lines attach the model, memory and tools to their AI agent. n8nview labels the outputs of IF and Switch nodes, leaves out sticky notes and marks disabled nodes.
 
 n8nview converts the workflow to [Mermaid](https://mermaid.js.org) and draws it with [termaid](https://github.com/fasouto/termaid).
 
@@ -69,15 +70,16 @@ n8nview --mermaid workflow.json    # print the Mermaid source instead
 cat workflow.json | n8nview        # read from stdin
 n8nview --width 120 workflow.json  # fit to 120 columns, not the terminal width
 n8nview --theme nord workflow.json # draw in colour
+n8nview --format styled-json workflow.json  # the drawing as JSON, for editors and plugins
 ```
 
 Each node shows its name and its type. When the drawing is wider than the terminal, n8nview leaves the types out, and then wraps long names.
 
-n8nview reads files and stdin only. It never calls the n8n API.
+n8nview reads files and stdin. It calls the n8n API only when you pass `--latest`.
 
-The [examples](examples) folder has three workflows to try it on: a chat agent, an IF branch and a loop.
+The [examples](examples) folder has workflows to try it on: a chat agent, an IF branch, a loop and an order pipeline.
 
-### Colour
+### Colour and structured output
 
 `--theme` draws in colour with one of termaid's themes: `default`, `terra`, `neon`, `mono`, `amber`, `phosphor`, `gruvbox`, `monokai`, `dracula`, `nord` or `solarized`. Disabled nodes are grey. Colour needs [Rich](https://rich.readthedocs.io/), which is an optional extra:
 
@@ -85,6 +87,53 @@ The [examples](examples) folder has three workflows to try it on: a chat agent, 
 pip install "n8nview[color]"
 uvx --from "n8nview[color]" n8nview --theme nord workflow.json
 ```
+
+`--format styled-json` prints one JSON document with the title and the drawing. Each line of the drawing is a list of `{"text", "style"}` chunks, and the style names the role of the text, such as `edge`, `arrow` or `class:running` for a node that is running. The Claude Code plugin below picks its colours from these styles.
+
+## Watch an execution
+
+n8nview draws a run of a workflow with a line under each node that says how far it got. The first scene of the recording above is `n8nview --latest --watch --theme default` during a run.
+
+```
+$ n8nview --latest
+Order pipeline · 7 nodes · execution 5 · running
+
+┌───────────┐ ┌─────────────┐ ┌──────────────┐      ┌──────────────┐
+│ New order │ │ Check stock │ │ Should fail? │      │    Crash     │
+│  webhook  ├►│    wait     ├►│      if      ├true─►│ stopAndError │
+│   ● 0ms   │ │   ● 3.0s    │ │    ● 6ms     │   │  │  ○ pending   │
+└───────────┘ └─────────────┘ └──────────────┘   │  └──────────────┘
+                                                 ├─false
+                                                 │  ┌──────────────┐ ┌───────────┐ ┌──────────────┐
+                                                 │  │ Charge card  │ │   Ship    │ │ Send receipt │
+                                                 ╰─►│     wait     ├►│   wait    ├►│     set      │
+                                                    │  ▶ running   │ │ ○ pending │ │  ○ pending   │
+                                                    └──────────────┘ └───────────┘ └──────────────┘
+```
+
+`●` marks a node that finished, with how long it took. `▶` marks the node that is running and `○` a node that has not run yet. `×` marks a node that failed, with its error message. `–` marks a node the run never reached. With `--theme`, finished nodes are green, the running node is yellow, failed nodes are red and the rest are grey.
+
+```bash
+n8nview --latest                  # the execution that is running, or else the last one
+n8nview --latest --watch          # keep redrawing as the run advances, until Ctrl+C
+n8nview --latest --workflow ID    # only this workflow's executions
+n8nview execution.json            # an execution saved from the API
+```
+
+`--latest` calls the n8n API. It reads `N8N_BASE_URL` (default `http://localhost:5678`) and `N8N_API_KEY` from the environment, or from a `.env` file in the current directory. Create the key in n8n under Settings, n8n API.
+
+n8n reports progress node by node only when **Save execution progress** is on, in the workflow's settings or for the whole instance. With the setting off, every node stays pending until the run ends. [examples/order-pipeline.json](examples/order-pipeline.json) has the setting on and three slow steps, so it is a good first workflow to watch.
+
+### Inside Claude Code
+
+The `claude-plugin` folder is a Claude Code plugin. It opens a pane beside the chat when an execution starts and redraws it every second, with each node coloured by its state: green when it finished, yellow while it runs, red when it failed and grey when it has not run. `/n8nview` opens the pane by hand.
+
+```bash
+pip install n8nview
+claude --plugin-dir claude-plugin
+```
+
+Start Claude Code in a folder whose `.env` has the two `N8N_` settings, or with them in the environment.
 
 ## What you can do with it
 
@@ -107,7 +156,7 @@ pbpaste | n8nview
 ```bash
 uv sync
 uv run pytest
-vhs docs/demo.tape   # record docs/demo.gif again
+vhs docs/demo.tape   # record docs/demo.gif again, with a local n8n running
 ```
 
 Unofficial, not affiliated with n8n.

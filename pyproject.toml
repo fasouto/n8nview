@@ -1,7 +1,7 @@
 [project]
 name = "n8nview"
 version = "0.1.0"
-description = "Draw n8n workflows in the terminal"
+description = "Draw n8n workflows and their executions in the terminal"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

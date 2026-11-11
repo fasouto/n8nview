@@ -1,4 +1,4 @@
-"""Draw n8n workflows in the terminal."""
+"""Draw n8n workflows and their executions in the terminal."""
 
 from importlib.metadata import version
 

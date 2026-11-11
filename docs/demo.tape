@@ -2,8 +2,10 @@
 #
 #   uv sync && vhs docs/demo.tape
 #
-# Run it from the repo root. It draws the workflows in examples/ and
-# tests/fixtures, most of them in colour, and then prints one as Mermaid.
+# Run it from the repo root. The first scene watches a run on a local n8n, so
+# it needs n8n running with examples/order-pipeline.json imported and active,
+# and N8N_BASE_URL and N8N_API_KEY in .env. The other scenes draw the
+# workflows in examples/ and tests/fixtures and print one as Mermaid.
 
 Output docs/demo.gif
 
@@ -23,14 +25,23 @@ Env "PS1" "$ "
 Env "VIRTUAL_ENV_DISABLE_PROMPT" "1"
 
 Hide
-Type "source .venv/bin/activate && demo=$(mktemp -d) && cp examples/*.json $demo"
+Type "source .venv/bin/activate && set -a && source .env && set +a && demo=$(mktemp -d) && cp examples/*.json $demo"
 Enter
 Type "cp tests/fixtures/linear.json $demo/daily-status.json && cp tests/fixtures/branching.json $demo/ticket-triage.json"
+Enter
+Type `(sleep 4 && curl -s -X POST -H 'content-type: application/json' -d '{"fail": false}' $N8N_BASE_URL/webhook/order > /dev/null &)`
 Enter
 Type "cd $demo && clear"
 Enter
 Show
 
+Type "n8nview --latest --watch --theme default"
+Enter
+Sleep 13s
+Ctrl+C
+Sleep 500ms
+
+Ctrl+L
 Type "n8nview daily-status.json"
 Enter
 Sleep 3s

@@ -1,0 +1,6 @@
+{
+  "name": "n8nview",
+  "version": "0.1.0",
+  "description": "A pane that draws the n8n execution that is running, node by node, with n8nview",
+  "types": "./types/index.d.ts"
+}
