@@ -2,6 +2,8 @@
 
 Draw an [n8n](https://n8n.io) workflow in the terminal, and watch it run node by node.
 
+Unofficial, not affiliated with n8n.
+
 ```sh
 n8nview workflow.json             # draw a workflow you downloaded from the n8n editor
 n8nview --mermaid workflow.json   # the same workflow as Mermaid text
@@ -52,14 +54,16 @@ n8nview converts the workflow to [Mermaid](https://mermaid.js.org) and draws it 
 
 ## Install
 
+n8nview is not on PyPI yet, so install it from GitHub:
+
 ```bash
-pip install n8nview
+pip install git+https://github.com/fasouto/n8nview
 ```
 
 Or run it without installing:
 
 ```bash
-uvx n8nview workflow.json
+uvx --from git+https://github.com/fasouto/n8nview n8nview workflow.json
 ```
 
 ## Usage
@@ -84,8 +88,8 @@ The [examples](examples) folder has workflows to try it on: a chat agent, an IF 
 `--theme` draws in colour with one of termaid's themes: `default`, `terra`, `neon`, `mono`, `amber`, `phosphor`, `gruvbox`, `monokai`, `dracula`, `nord` or `solarized`. Disabled nodes are grey. Colour needs [Rich](https://rich.readthedocs.io/), which is an optional extra:
 
 ```bash
-pip install "n8nview[color]"
-uvx --from "n8nview[color]" n8nview --theme nord workflow.json
+pip install "n8nview[color] @ git+https://github.com/fasouto/n8nview"
+uvx --from "n8nview[color] @ git+https://github.com/fasouto/n8nview" n8nview --theme nord workflow.json
 ```
 
 `--format styled-json` prints one JSON document with the title and the drawing. Each line of the drawing is a list of `{"text", "style"}` chunks, and the style names the role of the text, such as `edge`, `arrow` or `class:running` for a node that is running. The Claude Code plugin below picks its colours from these styles.
@@ -129,7 +133,7 @@ n8n reports progress node by node only when **Save execution progress** is on, i
 The `claude-plugin` folder is a Claude Code plugin. It opens a pane beside the chat when an execution starts and redraws it every second, with each node coloured by its state: green when it finished, yellow while it runs, red when it failed and grey when it has not run. `/n8nview` opens the pane by hand.
 
 ```bash
-pip install n8nview
+pip install git+https://github.com/fasouto/n8nview
 claude --plugin-dir claude-plugin
 ```
 
@@ -158,8 +162,6 @@ uv sync
 uv run pytest
 vhs docs/demo.tape   # record docs/demo.gif again, with a local n8n running
 ```
-
-Unofficial, not affiliated with n8n.
 
 ## License
 
